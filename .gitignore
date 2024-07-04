@@ -1,0 +1,9 @@
+# Python
+backend/venv/
+__pycache__/
+
+# Node
+frontend/node_modules/
+
+# Ignore venv (virtual environment)
+backend-flask/venv/
