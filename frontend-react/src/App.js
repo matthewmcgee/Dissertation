@@ -8,6 +8,7 @@ import NavBar from './components/NavBar';
 import Home from './components/Home';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import Chatbot from './components/Chatbot';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -29,12 +30,16 @@ function App() {
       <div className="App">
         {/* adding in the nav bar */}
         <NavBar />
+        
+        {/* test to validate flask back-end response */}
+        {/* <h1><br/>Test API Message: {message}</h1> */}
+
         {/* adding routes */}
-        <h1><br></br>Test API Message: {message}</h1>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/chatbot" element={<Chatbot />} />
         </Routes>
       </div>
     </Router>
