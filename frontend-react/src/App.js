@@ -9,6 +9,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import Chatbot from './components/Chatbot';
+import Appointment from './components/Appointment';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -40,6 +41,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/appointment" element={<Appointment />} />
         </Routes>
       </div>
     </Router>

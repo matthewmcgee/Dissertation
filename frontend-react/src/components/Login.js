@@ -9,6 +9,7 @@ const Login = () => {
 
             {/* form for user to login */}
             <div class="half userinput">
+                {/* method = post, action = /login */}
                 <form method="" action="">
                     <input type="email" name="email" class="stack" placeholder="Email"  />
                     <input type="password" name="password" class="stack" placeholder="Password" />

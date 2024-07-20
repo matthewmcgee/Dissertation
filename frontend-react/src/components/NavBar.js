@@ -21,7 +21,8 @@ const NavBar = () => {
                 <span class="pseudo button"><Link to="/">Home</Link></span>
                 <span class="pseudo button"><Link to="/login">Login</Link></span>
                 <span class="pseudo button"><Link to="/signup">Sign Up</Link></span>
-                <span class="pseudo button"><Link to="/chatbot">Chatbot</Link></span>                
+                <span class="pseudo button"><Link to="/chatbot">Chatbot</Link></span>
+                <span class="pseudo button"><Link to="/appointment">Appointment</Link></span>              
                 {/* a tags could also be used, altho not as efficient */}
                 {/* <a class="button" href="/page3">Page 3</a> */}
             </div>
