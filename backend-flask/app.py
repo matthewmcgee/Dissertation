@@ -8,6 +8,12 @@ app = Flask(__name__)
 # to handle requests from different origins
 CORS(app)
 
+# set the port number to run the server on
+# have to use 5001, for Mac 5000 is used for an AirPlay server
+# fine to deactivate Airplay Server under Settings - Sharing - uncheck Airplay Server
+# can use lsof -i :5000 to see processes using port 5000
+PORT_NUMBER = 5001
+
 # Configure MySQL details
 db = mysql.connector.connect(
     host="localhost",
@@ -71,10 +77,33 @@ def signup():
     finally:
         cursor.close()
 
+# POST request for logging in
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    # ensure email and password have been filled out
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+
+    try:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM login WHERE email_address = %s", (email,))
+        user = cursor.fetchone()
+
+        # use bcrypt to ensure their password matches hashed password in database
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
+            return jsonify({"message": "Login successful", "login_id": user['login_id']}), 200
+        else:
+            return jsonify({"message": "Invalid email or password"}), 401
+    except mysql.connector.Error as err:
+        return jsonify({"message": "Error: " + str(err)}), 500
+    finally:
+        cursor.close()
+
 if __name__ == '__main__':
-    print("\nRunning Flask server...\n")
-    # have to use 5001, for Mac 5000 is used for an AirPlay server
-    # fine to deactivate Airplay Server under Settings - Sharing - uncheck Airplay Server
-    # can use lsof -i :5000 to see processes using port 5000
-    app.run(port=5001, debug=True)
+    print(f"\nRunning Flask server on port {str(PORT_NUMBER)} ...\n")
+    app.run(port=PORT_NUMBER, debug=True)
     print("\nFlask server finished....")

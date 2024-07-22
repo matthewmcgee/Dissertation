@@ -40,6 +40,7 @@ const SignUp = () => {
     return (
         <div className="container">
             <h2>Sign Up</h2>
+            <p>Please fill in the details below to create your account:</p>
             <div className="half userinput">
                 <form onSubmit={handleSubmit}>
                     <input
@@ -53,23 +54,26 @@ const SignUp = () => {
                     <input
                         type="text"
                         name="lastname"
-                        className="stack"
+                        className=""
                         placeholder="Last Name"
                         value={lastname}
                         onChange={(e) => setLastname(e.target.value)}
                     />
+                    <br /><br />
+                    <span className="stack">Date of Birth:</span>
                     <input
                         type="date"
                         name="birthday"
-                        className="stack"
+                        className=""
                         value={birthday}
                         onChange={(e) => setBirthday(e.target.value)}
                     />
+                    <br /><br />
                     <input
                         type="text"
                         name="phonenumber"
                         className="stack"
-                        placeholder="0123..."
+                        placeholder="Phone Number"
                         value={phonenumber}
                         onChange={(e) => setPhonenumber(e.target.value)}
                     />
@@ -84,12 +88,13 @@ const SignUp = () => {
                     <input
                         type="password"
                         name="password"
-                        className="stack"
+                        className=""
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <button type="submit" className="stack icon-paper-plane">
+                    <br /><br />
+                    <button type="submit" className="icon-paper-plane">
                         Sign Up
                     </button>
                 </form>
