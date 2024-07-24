@@ -7,3 +7,6 @@ frontend/node_modules/
 
 # Ignore venv (virtual environment)
 backend-flask/venv/
+
+# Ignore flask session information
+backend-flask/flask_session/

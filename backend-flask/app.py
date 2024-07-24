@@ -1,12 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from flask_cors import CORS
+from flask_session import Session
 import mysql.connector
 import bcrypt
 
 app = Flask(__name__)
 # enables Cross-Origin Resource Sharing - allowing the Flask application
 # to handle requests from different origins
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # set the port number to run the server on
 # have to use 5001, for Mac 5000 is used for an AirPlay server
@@ -22,6 +23,11 @@ db = mysql.connector.connect(
     database="dissertation",
     port="8889"
 )
+
+# Using a secret key for session management
+app.secret_key = r"b'm[\r\x14\xe3\x05\x9b\xcc\xea\x8e\xcd\xdaa\xbb\xbe4\xe7\xafLF\xc6/5\xc3'"
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
@@ -70,6 +76,7 @@ def signup():
 
         # commit the changes now both records have been successfully inserted
         db.commit()
+
         return jsonify({"message": "User registered successfully"}), 201
     except mysql.connector.Error as err:
         db.rollback()  # Rollback in case of error
@@ -94,7 +101,10 @@ def login():
         user = cursor.fetchone()
 
         # use bcrypt to ensure their password matches hashed password in database
+        # user['password'] is stored as varbinary (bytes) already, so no need to encode it
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
+            # login successful, store the login ID in the session
+            session["login_id"] = user["login_id"]
             return jsonify({"message": "Login successful", "login_id": user['login_id']}), 200
         else:
             return jsonify({"message": "Invalid email or password"}), 401
@@ -102,6 +112,23 @@ def login():
         return jsonify({"message": "Error: " + str(err)}), 500
     finally:
         cursor.close()
+
+# POST route for logout. 
+@app.route('/logout', methods=['POST'])
+def logout():
+    # clear session information
+    session.clear()
+    return jsonify({"message": "Logged out successfully"}), 200
+
+# endpoint to check if user is logged in, will be used by frontend
+@app.route('/check_session', methods=['GET'])
+def check_session():
+    login_id = session.get('login_id')
+    if login_id:
+        return jsonify({"login_id": login_id, "logged_in": True}), 200
+    else:
+        return jsonify({"logged_in": False}), 200
+
 
 if __name__ == '__main__':
     print(f"\nRunning Flask server on port {str(PORT_NUMBER)} ...\n")
