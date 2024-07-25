@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const SignUp = () => {
     const [firstname, setFirstname] = useState('');
@@ -7,6 +7,23 @@ const SignUp = () => {
     const [phonenumber, setPhonenumber] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [practice, setPractice] = useState('');
+    const [practices, setPractices] = useState([]);
+
+    // fetch practice data from backend
+    useEffect(() => {
+        const fetchPractices = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5001/practices");
+                const data = await response.json();
+                setPractices(data);
+            } catch (error) {
+                console.error("Error fetching practices:", error)
+            }
+        };
+
+        fetchPractices();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,6 +40,7 @@ const SignUp = () => {
                 phonenumber,
                 email,
                 password,
+                practice,
             }),
         });
 
@@ -30,10 +48,8 @@ const SignUp = () => {
 
         if (response.ok) {
             console.log('Signup successful:', data);
-            // Handle successful signup (e.g., redirect to login or dashboard)
         } else {
             console.error('Signup failed:', data.message);
-            // Handle signup failure (e.g., show error message)
         }
     };
 
@@ -93,6 +109,25 @@ const SignUp = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                    <br /><br />
+                    <span className="stack">Select GP Practice:</span>
+                    <select
+                        name="practice"
+                        className=""
+                        value={practice}
+                        onChange={(e) => setPractice(e.target.value)}
+                    >
+                        {/* dynamically showing practices */}
+                        {practices.map((practice) => (
+                            <option 
+                                key={practice.practice_id}
+                                value={practice.practice_id}>
+                            {/* display practice name and town/city  */}
+                            {practice.practice_name}, {practice.city}
+                            </option>
+                        ))}
+                    </select>
+
                     <br /><br />
                     <button type="submit" className="icon-paper-plane">
                         Sign Up

@@ -29,14 +29,6 @@ app.secret_key = r"b'm[\r\x14\xe3\x05\x9b\xcc\xea\x8e\xcd\xdaa\xbb\xbe4\xe7\xafL
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    # return jsonify({'message': 'Hello from Flask!'})
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM patient")
-    data = cursor.fetchall()
-    return jsonify(data)
-
 # POST request for signing up
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -47,9 +39,10 @@ def signup():
     phonenumber = data.get('phonenumber')
     email = data.get('email')
     password = data.get('password')
+    practice_id = data.get('practice')
 
     # Validate data - ensure all fields populated. Return 400 if not
-    if not all([firstname, lastname, birthday, phonenumber, email, password]):
+    if not all([firstname, lastname, birthday, phonenumber, email, password, practice_id]):
         print("Missing fields in sign up screen!")
         return jsonify({"message": "All fields are required"}), 400
 
@@ -69,9 +62,9 @@ def signup():
 
         # Insert into patient table
         cursor.execute(
-            "INSERT INTO patient (first_name, last_name, date_of_birth, phone_number, login_id) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (firstname, lastname, birthday, phonenumber, login_id)
+            "INSERT INTO patient (first_name, last_name, date_of_birth, phone_number, login_id, practice_id) "
+            "VALUES (%s, %s, %s, %s, %s, %s)",
+            (firstname, lastname, birthday, phonenumber, login_id, practice_id)
         )
 
         # commit the changes now both records have been successfully inserted
@@ -128,6 +121,14 @@ def check_session():
         return jsonify({"login_id": login_id, "logged_in": True}), 200
     else:
         return jsonify({"logged_in": False}), 200
+
+# GET practice information
+@app.route('/practices', methods=["GET"])
+def get_practices():
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT practice_id, practice_name, city FROM practice")
+    data = cursor.fetchall()
+    return jsonify(data)
 
 
 if __name__ == '__main__':
