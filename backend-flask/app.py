@@ -94,6 +94,62 @@ def signup():
         cursor.close()
         conn.close()
 
+# POST request for adding staff
+@app.route('/addstaff', methods=['POST'])
+def add_staff():
+    data = request.get_json()
+    title = data.get('title')
+    firstname  = data.get('firstname')
+    lastname  = data.get('lastname')
+    email  = data.get('email')
+    password  = data.get('password')
+    practice  = data.get('practice')
+    medical_staff_role_id  = data.get('medicalStaffRole')
+
+    # user role id will be 3 for admins and 2 for all other medical staff
+    if medical_staff_role_id == "5":
+        user_role_id = 3
+    else:
+        user_role_id = 2
+
+    # Validate data - ensure all fields populated. Return 400 if not
+    if not all([title, firstname, lastname, email, password, practice, medical_staff_role_id]):
+        return jsonify({"message": "All fields are required"}), 400
+
+    # Use bcrypt to hash the password
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor()
+        
+        # Insert into login table
+        cursor.execute(
+            "INSERT INTO login (email_address, password, user_role_id) VALUES (%s, %s, %s)",
+            (email, hashed_password, user_role_id)
+        )
+        # Get the ID of the newly inserted login record
+        login_id = cursor.lastrowid
+
+        # Insert into medical staff table
+        cursor.execute(
+            "INSERT INTO medical_staff (title, first_name, last_name, practice_id, medical_staff_role_id, login_id) "
+            "VALUES (%s, %s, %s, %s, %s, %s)",
+            (title, firstname, lastname, practice, medical_staff_role_id, login_id)
+        )
+
+        # commit the changes now both records have been successfully inserted
+        conn.commit()
+
+        return jsonify({"message": "User added successfully"}), 201
+    except mysql.connector.Error as err:
+        conn.rollback()  # Rollback in case of error
+        print("Add Staff Error:", err)
+        return jsonify({"message": "Error: " + str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 # POST request for logging in
 @app.route('/login', methods=['POST'])
 def login():

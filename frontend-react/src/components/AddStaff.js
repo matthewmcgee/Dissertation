@@ -15,6 +15,8 @@ const AddStaff = () => {
     const [practices, setPractices] = useState([]);
     const [medicalStaffRole, setMedicalStaffRole] = useState('');
     const [medicalStaffRoles, setMedicalStaffRoles] = useState([]);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     // fetch practice data and medical staff from backend
     useEffect(() => {
@@ -23,6 +25,9 @@ const AddStaff = () => {
                 const response = await fetch("http://127.0.0.1:5001/practices");
                 const data = await response.json();
                 setPractices(data);
+                if (data.length > 0) {
+                    setPractice(data[0].practice_id);
+                }
             } catch (error) {
                 console.error("Error fetching practices:", error);
             }
@@ -33,6 +38,9 @@ const AddStaff = () => {
                 const response = await fetch("http://127.0.0.1:5001/medical_staff_roles");
                 const data = await response.json();
                 setMedicalStaffRoles(data);
+                if (data.length > 0) {
+                    setMedicalStaffRole(data[0].medical_staff_role_id);
+                }
             } catch (error) {
                 console.error("Error fetching staff roles:", error);
             }
@@ -44,30 +52,54 @@ const AddStaff = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccess('');
 
-        const response = await fetch('http://localhost:5001/addstaff', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                title,
-                firstname,
-                lastname,
-                email,
-                password,
-                practice,
-                medicalStaffRole,
-            }),
-        });
+        try {
+            const response = await fetch('http://localhost:5001/addstaff', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title,
+                    firstname,
+                    lastname,
+                    email,
+                    password,
+                    practice,
+                    medicalStaffRole,
+                }),
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (response.ok) {
-            console.log('Staff added successfully:', data);
-        } else {
-            console.error('Error adding staff:', data.message);
+            if (response.ok) {
+                console.log('Staff added successfully:', data);
+                setError('');
+                setSuccess(data.message);
+            } else {
+                console.error('Error adding staff:', data.message);
+                setError(data.message);
+                setSuccess('');
+            }
+        } catch (error) {
+            console.error('Error adding staff:', error);
+            setError("An error occured. Please try again")
         }
+    };
+
+    // resets all fields and error/success message
+    const handleReset = () => {
+        setTitle('');
+        setFirstname('');
+        setLastname('');
+        setEmail('');
+        setPassword('');
+        setPractice(practices.length > 0 ? practices[0].practice_id : '');
+        setMedicalStaffRole(medicalStaffRoles.length > 0 ? medicalStaffRoles[0].medical_staff_role_id : '');
+        setError('');
+        setSuccess('');
     };
 
     return (
@@ -158,7 +190,13 @@ const AddStaff = () => {
                     <button type="submit" className="icon-paper-plane">
                         Add Staff
                     </button>
+                    <br />
+                    <button type="button" className="icon-paper-plane" onClick={handleReset}>
+                        Reset
+                    </button>
                 </form>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {success && <p style={{ color: 'green' }}>{success}</p>}
             </div>
         </div>
     );
