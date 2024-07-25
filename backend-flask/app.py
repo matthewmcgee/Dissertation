@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, session
 from flask_cors import CORS
 from flask_session import Session
 import mysql.connector
+from mysql.connector import pooling
 import bcrypt
 
 app = Flask(__name__)
@@ -16,13 +17,24 @@ CORS(app, supports_credentials=True)
 PORT_NUMBER = 5001
 
 # Configure MySQL details
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="dissertation",
-    port="8889"
-)
+dbconfig = {
+    "host": "localhost",
+    "user": "root",
+    "password": "root",
+    "database": "dissertation",
+    "port": "8889",
+}
+
+# Create new mySQL connection pool
+try:
+    db_pool = mysql.connector.pooling.MySQLConnectionPool(
+    pool_name="mypool",
+    pool_size=10,
+    **dbconfig
+    )
+    print("Database connection established...")
+except mysql.connector.Error as err:
+    print(f"Error in database connection: {err}")
 
 # Using a secret key for session management
 app.secret_key = r"b'm[\r\x14\xe3\x05\x9b\xcc\xea\x8e\xcd\xdaa\xbb\xbe4\xe7\xafLF\xc6/5\xc3'"
@@ -40,6 +52,8 @@ def signup():
     email = data.get('email')
     password = data.get('password')
     practice_id = data.get('practice')
+    # user role id will always be 1 for patients
+    user_role_id = 1
 
     # Validate data - ensure all fields populated. Return 400 if not
     if not all([firstname, lastname, birthday, phonenumber, email, password, practice_id]):
@@ -50,12 +64,13 @@ def signup():
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     try:
-        cursor = db.cursor()
+        conn = db_pool.get_connection()
+        cursor = conn.cursor()
         
         # Insert into login table
         cursor.execute(
-            "INSERT INTO login (email_address, password) VALUES (%s, %s)",
-            (email, hashed_password)
+            "INSERT INTO login (email_address, password, user_role_id) VALUES (%s, %s, %s)",
+            (email, hashed_password, user_role_id)
         )
         # Get the ID of the newly inserted login record
         login_id = cursor.lastrowid
@@ -68,14 +83,16 @@ def signup():
         )
 
         # commit the changes now both records have been successfully inserted
-        db.commit()
+        conn.commit()
 
         return jsonify({"message": "User registered successfully"}), 201
     except mysql.connector.Error as err:
-        db.rollback()  # Rollback in case of error
+        conn.rollback()  # Rollback in case of error
+        print("Signup Error:", err)
         return jsonify({"message": "Error: " + str(err)}), 500
     finally:
         cursor.close()
+        conn.close()
 
 # POST request for logging in
 @app.route('/login', methods=['POST'])
@@ -89,7 +106,8 @@ def login():
         return jsonify({"message": "Email and password are required"}), 400
 
     try:
-        cursor = db.cursor(dictionary=True)
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM login WHERE email_address = %s", (email,))
         user = cursor.fetchone()
 
@@ -105,6 +123,7 @@ def login():
         return jsonify({"message": "Error: " + str(err)}), 500
     finally:
         cursor.close()
+        conn.close()
 
 # POST route for logout. 
 @app.route('/logout', methods=['POST'])
@@ -125,10 +144,30 @@ def check_session():
 # GET practice information
 @app.route('/practices', methods=["GET"])
 def get_practices():
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT practice_id, practice_name, city FROM practice")
-    data = cursor.fetchall()
-    return jsonify(data)
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT practice_id, practice_name, city FROM practice")
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(data)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# GET medical staff roles information
+@app.route('/medical_staff_roles', methods=["GET"])
+def get_medical_staff_roles():
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT medical_staff_role_id, role_name FROM medical_staff_role")
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(data)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
 
 
 if __name__ == '__main__':

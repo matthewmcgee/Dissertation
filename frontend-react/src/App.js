@@ -10,6 +10,7 @@ import SignUp from './components/SignUp';
 import Chatbot from './components/Chatbot';
 import Appointment from './components/Appointment';
 import Account from './components/Account';
+import AddStaff from './components/AddStaff';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/appointment" element={<Appointment />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/addstaff" element={<AddStaff />} />          
         </Routes>
       </div>
     </Router>
