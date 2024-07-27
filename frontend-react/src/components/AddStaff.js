@@ -1,8 +1,6 @@
 // TODO: needs to be admin only to access this page - see isLoggedIn in Login/Signup
 // - it 
 // TODO: admin only able to add staff for their practice
-// TODO: success message, green font, include the surname
-// TODO: error message, similar to login/signup screen
 import React, { useState, useEffect } from "react";
 
 const AddStaff = () => {

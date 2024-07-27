@@ -141,7 +141,7 @@ def add_staff():
         # commit the changes now both records have been successfully inserted
         conn.commit()
 
-        return jsonify({"message": "User added successfully"}), 201
+        return jsonify({"message": f"Staff member {lastname} added successfully"}), 201
     except mysql.connector.Error as err:
         conn.rollback()  # Rollback in case of error
         print("Add Staff Error:", err)
@@ -225,6 +225,114 @@ def get_medical_staff_roles():
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
 
+# loads patient info based on a given login id
+@app.route("/patient/<login_id>", methods=["GET"])
+def get_patient_info(login_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        sql_query = f"""SELECT patient_id, first_name, last_name, date_of_birth,
+                    phone_number, login_id, practice_id
+                    FROM patient
+                    WHERE login_id = {login_id}
+                    """
+        cursor.execute(sql_query)
+        data = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if not data:
+            return jsonify({"error" : "Patient not found"}), 404
+
+        return jsonify(data)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# loads practice info for a given practice id
+@app.route('/practice/<practice_id>', methods=['GET'])
+def get_practice_by_id(practice_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        sql_query = f"SELECT * FROM practice WHERE practice_id = {practice_id}"
+        cursor.execute(sql_query)
+        data = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if not data:
+            return jsonify({'error': 'Practice not found'}), 404
+
+        return jsonify(data)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# loads medical staff for a given practice
+@app.route('/medical_staff/<practice_id>', methods=['GET'])
+def get_medical_staff_by_practice_id(practice_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = f"""
+            SELECT m.medical_staff_id, m.title, m.first_name, m.last_name,
+                m.practice_id, m.medical_staff_role_id, r.role_name
+            FROM medical_staff m 
+            LEFT JOIN medical_staff_role r 
+            ON m.medical_staff_role_id = r.medical_staff_role_id
+            WHERE m.practice_id = {practice_id}
+            AND r.medical_staff_role_id != 5 -- exclude admin
+            """
+        cursor.execute(query)
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        if not data:
+            return jsonify({'error': 'No medical staff found for this practice'}), 404
+
+        return jsonify(data)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# loads availability for a given medical staff member
+@app.route("/availability/<medical_staff_id>", methods=["GET"])
+def get_availability_per_staff_member(medical_staff_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = f"""SELECT av.availability_date,
+            TIME_FORMAT(av.start_time, '%H:%i:%s') AS start_time,
+            TIME_FORMAT(av.end_time, '%H:%i:%s') AS end_time,
+            CASE
+                WHEN ap.appointment_id IS NULL
+                THEN "Available"
+                ELSE "Booked"
+            END AS status
+            FROM availability av 
+            LEFT JOIN appointment ap 
+            ON av.medical_staff_id = ap.medical_staff_id
+            AND av.availability_date = ap.appointment_date
+            AND av.start_time = ap.start_time
+            AND av.end_time = av.end_time
+            WHERE av.medical_staff_id = {medical_staff_id}
+            AND av.availability_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 14 DAY
+            ORDER BY av.availability_date ASC, av.start_time ASC
+            """
+        cursor.execute(query)
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # return jsonified data
+        if data:
+            return jsonify(data)
+        # important if no data exists, return an empty array (not an error)
+        # some staff may have no availability
+        else:
+            return jsonify([])
+        
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
 
 if __name__ == '__main__':
     print(f"\nRunning Flask server on port {str(PORT_NUMBER)} ...\n")
