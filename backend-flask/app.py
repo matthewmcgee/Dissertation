@@ -334,6 +334,37 @@ def get_availability_per_staff_member(medical_staff_id):
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
 
+# POST request to book an appointment
+@app.route("/book_appointment", methods=["POST"])
+def book_appointment():
+    try:
+        data = request.json
+        appointment_date = data.get("appointment_date")
+        start_time = data.get("start_time")
+        end_time = data.get("end_time")
+        patient_id = data.get("patient_id")
+        medical_staff_id = data.get("medical_staff_id")
+        appointment_status_id = data.get("appointment_status_id")
+
+        conn = db_pool.get_connection()
+        cursor = conn.cursor()
+
+        query = """
+            INSERT INTO appointment (appointment_date, start_time,
+            end_time, patient_id, medical_staff_id, appointment_status_id)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (appointment_date, start_time,
+            end_time, patient_id, medical_staff_id, appointment_status_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message":"Appointment booked successfully"}), 201
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+
 if __name__ == '__main__':
     print(f"\nRunning Flask server on port {str(PORT_NUMBER)} ...\n")
     app.run(port=PORT_NUMBER, debug=True)

@@ -45,6 +45,7 @@ const Appointment = () => {
         // check that data exists, if so set default staff member to first array element
         if (staffData.length > 0) {
           setSelectedStaff(staffData[0].medical_staff_id);
+          fetchAvailability(staffData[0].medical_staff_id);
         }
 
       } catch (error) {
@@ -57,22 +58,16 @@ const Appointment = () => {
   }, []);
 
   // getting availability for the chosen staff member
-  useEffect(() => {
-    const fetchAvailability = async () => {
-      if (selectedStaff) {
-        try {
-          const availabilityResponse = await fetch(`http://127.0.0.1:5001/availability/${selectedStaff}`);
-          const availabilityData = await availabilityResponse.json();
-          setAvailability(availabilityData);
-        } catch (error) {
-          console.error("Error fetching availability:", error);
-          setError("An error occurred while fetching availability. Please try again.");
-        }
-      }
-    };
-
-    fetchAvailability();
-  }, [selectedStaff]);
+  const fetchAvailability = async (staffId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5001/availability/${staffId}`);
+      const availabilityData = await response.json();
+      setAvailability(availabilityData);
+    } catch (error) {
+      console.error("Error fetching availability:", error);
+      setError("An error occurred while fetching availability. Please try again.");
+    }
+  };
 
   const getFormattedDate = (date) => {
     return new Date(date).toLocaleDateString('en-GB', {
@@ -87,6 +82,50 @@ const Appointment = () => {
   const formatDateForComparison = (dateString) => {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
+  };
+
+  // appointment booking functionality
+  const bookAppointment = async (appointmentDate, startTime, endTime) => {
+    try {
+      // get local login id
+      const loginId = localStorage.getItem("login_id");
+
+      // fetch patient data based on login id
+      const patientResponse = await fetch(`http://127.0.0.1:5001/patient/${loginId}`);
+      const patientData = await patientResponse.json();
+
+      // send post request to make the booking
+      const response = await fetch("http://127.0.0.1:5001/book_appointment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          appointment_date: appointmentDate,
+          start_time: startTime,
+          end_time: endTime,
+          patient_id: patientData.patient_id,
+          medical_staff_id: selectedStaff,
+          // 1 represents "Pending"
+          appointment_status_id: 1
+        }),
+      });
+
+      if (response.ok) {
+        // displays a modal alert to the user
+        alert("Appointment booked successfully!");
+        // refresh availability so the appointments update
+        fetchAvailability(selectedStaff);
+      } else {
+        const errorData = await response.json();
+        console.error("Error booking appointment:", errorData);
+        setError("An error occured while booking the appointment. Please try again.");
+      }
+
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      setError("An error occured while booking the appointment. Please try again.");
+    }
   };
 
   // generates a HTML calendar with the next 14 days
@@ -111,6 +150,10 @@ const Appointment = () => {
             dayAvailability.map((slot, index) => (
               <div key={index} className={`slot ${slot.status.toLowerCase()}`}>
                 {slot.start_time} - {slot.end_time} ({slot.status})
+                {/* Add button beside each available appointment to book it */}
+                {slot.status === "Available" && (
+                  <button onClick={() => bookAppointment(formattedDate, slot.start_time, slot.end_time)}>Book</button>
+                )}
               </div>
             ))
           ) : (
@@ -145,7 +188,10 @@ const Appointment = () => {
           <select
             id='staffSelect'
             value={selectedStaff}
-            onChange={(e) => setSelectedStaff(e.target.value)}
+            onChange={(e) => {
+              setSelectedStaff(e.target.value);
+              fetchAvailability(e.target.value);
+            }}
           >
             {medicalStaff.map((staff) => (
               <option
@@ -159,6 +205,7 @@ const Appointment = () => {
           </select>
         </div>
       )}
+      <br /><br />
       <div className="calendar">
         {renderCalendar()}
       </div>
