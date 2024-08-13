@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request, session
 from flask_cors import CORS
 from flask_session import Session
-import mysql.connector
-from mysql.connector import pooling
+import mysql.connector # type: ignore
+from mysql.connector import pooling # type: ignore
 import bcrypt
 
 app = Flask(__name__)

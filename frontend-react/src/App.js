@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 // Routes used in v6, not Switch
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // css stylesheet
@@ -11,6 +11,7 @@ import Chatbot from './components/Chatbot';
 import Appointment from './components/Appointment';
 import Account from './components/Account';
 import AddStaff from './components/AddStaff';
+import NotFound from './components/NotFound';
 
 function App() {
   return (
@@ -27,7 +28,9 @@ function App() {
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/appointment" element={<Appointment />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/addstaff" element={<AddStaff />} />          
+          <Route path="/addstaff" element={<AddStaff />} />
+          {/* adding a catch all for invalid urls */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>
