@@ -1,5 +1,4 @@
 body {
-  /* text-align: center; */
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -10,11 +9,102 @@ body {
   margin: 0 auto;
   padding-top: 70px;
   padding-bottom: 20px;
+  min-height: 100vh;
+  position: relative;
+
 }
 
 /* styles for the nav bar */
 nav {
-  background-color: #282c34;
+  background-color: #005ea2;
   color: white;
   position: fixed;
+}
+
+nav a {
+  color: white;
+}
+
+.footer {
+  background-color: #005ea2;
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+  position: relative;
+  width: 100%;
+}
+
+/* making the footer dynamic for smaller screen sizes */
+@media (min-height: 700px) {
+  .footer {
+    margin-top: -444px;
+  }
+}
+
+/* top half of footer */
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* individual elements within the top half */
+.footer-section {
+  flex: 1;
+  margin: 20px;
+  min-width: 200px;
+}
+
+.footer-section h4 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #ecf0f1;
+}
+
+.footer-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin: 10px 0;
+}
+
+/* add hover effect for a tags in footer */
+.footer-section ul li a {
+  color: #ecf0f1;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+/* adding colour change when hover over any list item */
+.footer-section ul li a:hover {
+  color: #3498db;
+}
+
+.social-icons {
+  display: flex;
+  gap: 10px;
+  padding: 0;
+  justify-content: center;
+}
+
+.social-icons li {
+  list-style: none;
+}
+
+.social-icons li a {
+  color: #ecf0f1;
+  font-size: 20px;
+  transition: color 0.3s ease;
+}
+
+.social-icons li a:hover {
+  color: #3498db;
+}
+
+.footer-bottom {
+  margin-top: 20px;
+  border-top: 1px solid #7f8c8d;
+  padding-top: 20px;
 }

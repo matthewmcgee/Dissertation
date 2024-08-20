@@ -32,7 +32,7 @@ const Account = () => {
 
     return (
         <div class="container">
-            <h1>Manage Account</h1>
+            <h2>Manage Account</h2>
             <ul>
                 <li>My Details</li>
                 <li>My Appointments</li>

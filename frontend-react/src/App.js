@@ -12,6 +12,7 @@ import Appointment from './components/Appointment';
 import Account from './components/Account';
 import AddStaff from './components/AddStaff';
 import NotFound from './components/NotFound';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
           {/* adding a catch all for invalid urls */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        {/* adding footer */}
+        <Footer />
       </div>
     </Router>
   );
