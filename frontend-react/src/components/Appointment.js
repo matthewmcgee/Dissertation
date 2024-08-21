@@ -168,20 +168,39 @@ const Appointment = () => {
   return (
     <div className="container">
       <h2>Make an Appointment</h2>
-      <p>Here you can make an appointment with your GP</p>
+      <p>Here you can make an appointment with your practice</p>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h3>Your Practice Information:</h3>
       {practice && (
-        <div>
-          <h3>Practice Information</h3>
-          <p>{practice.practice_name}</p>
-          <p>{practice.address}</p>
-          <p>{practice.postcode}</p>
-          <p>{practice.city}, {practice.country}</p>
-          <p>Phone: {practice.telephone_number}</p>
+        <div className='flex one two-600'>
+          <div className='full third-600'>
+            <p>{practice.practice_name}</p>
+            <p>{practice.address}</p>
+            <p>{practice.postcode}</p>
+            <p>{practice.city}, {practice.country}</p>
+            <p>Phone: {practice.telephone_number}</p>
+          </div>
+          {/* Google maps iframe */}
+          <div className='full two-third-600'>
+            {practice.google_maps_id ? (
+              <iframe 
+                src={practice.google_maps_id}
+                allowFullScreen="" 
+                loading="lazy"
+                width="100%"
+                height="220px"
+                referrerPolicy="no-referrer-when-downgrade">
+              </iframe>
+            ) : (
+              // leave blank if no google maps id
+              <p/>
+            )}
+          </div>
         </div>
       )}
       {medicalStaff.length > 0 && (
         <div>
+          <br/>
           <label htmlFor='staffSelect'>
             Select Medical Staff:
           </label>
