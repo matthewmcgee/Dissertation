@@ -152,7 +152,7 @@ const Appointment = () => {
                 {slot.start_time} - {slot.end_time} ({slot.status})
                 {/* Add button beside each available appointment to book it */}
                 {slot.status === "Available" && (
-                  <button onClick={() => bookAppointment(formattedDate, slot.start_time, slot.end_time)}>Book</button>
+                  <button className='booking_button' onClick={() => bookAppointment(formattedDate, slot.start_time, slot.end_time)}>Book</button>
                 )}
               </div>
             ))
@@ -198,20 +198,23 @@ const Appointment = () => {
           </div>
         </div>
       )}
+      <div className='appointment-body'>
+        <hr/>
+      </div>
       {medicalStaff.length > 0 && (
-        <div>
-          <br/>
+        <div className='flex one'>
           <label htmlFor='staffSelect'>
             Select Medical Staff:
           </label>
           <select
             id='staffSelect'
+            className=''
             value={selectedStaff}
             onChange={(e) => {
               setSelectedStaff(e.target.value);
               fetchAvailability(e.target.value);
-            }}
-          >
+            }}>
+            {/* add each medical staff member to the dropdown */}
             {medicalStaff.map((staff) => (
               <option
                 key={staff.medical_staff_id}
@@ -224,8 +227,8 @@ const Appointment = () => {
           </select>
         </div>
       )}
-      <br /><br />
-      <div className="calendar">
+      <br />
+      <div className="flex one three-350 four-700 five-1050 six-1400 seven-1750 eight-2100 calendar">
         {renderCalendar()}
       </div>
     </div>

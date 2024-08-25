@@ -108,3 +108,67 @@ nav a {
   border-top: 1px solid #7f8c8d;
   padding-top: 20px;
 }
+
+#staffSelect {
+  width: 400px;
+  height: 40px;
+}
+
+.appointment-body {
+  margin-bottom: 20px;
+}
+
+/* adds a gap between each appointment */
+.calendar {
+  gap: 20px;
+}
+
+.day-column {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.day-column h4 {
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 10px
+}
+
+.slot {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+/* green formatting */
+.slot.available {
+  background-color: #e0f7e9;
+  border-color: #3cc28a;
+}
+
+/* red formatting */
+.slot.booked {
+  background-color: #ffe0e0;
+  border-color: #ff6b6b;
+}
+
+.booking_button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8em;
+}
+
+.booking_button:hover {
+  background-color: #0056b3;
+}

@@ -301,8 +301,8 @@ def get_availability_per_staff_member(medical_staff_id):
         conn = db_pool.get_connection()
         cursor = conn.cursor(dictionary=True)
         query = f"""SELECT av.availability_date,
-            TIME_FORMAT(av.start_time, '%H:%i:%s') AS start_time,
-            TIME_FORMAT(av.end_time, '%H:%i:%s') AS end_time,
+            TIME_FORMAT(av.start_time, '%H:%i') AS start_time,
+            TIME_FORMAT(av.end_time, '%H:%i') AS end_time,
             CASE
                 WHEN ap.appointment_id IS NULL
                 THEN "Available"
