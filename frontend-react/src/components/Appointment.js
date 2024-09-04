@@ -147,15 +147,21 @@ const Appointment = () => {
         <div key={formattedDate} className="day-column">
           <h4>{getFormattedDate(currentDate)}</h4>
           {dayAvailability.length > 0 ? (
-            dayAvailability.map((slot, index) => (
-              <div key={index} className={`slot ${slot.status.toLowerCase()}`}>
-                {slot.start_time} - {slot.end_time} ({slot.status})
-                {/* Add button beside each available appointment to book it */}
-                {slot.status === "Available" && (
-                  <button className='booking_button' onClick={() => bookAppointment(formattedDate, slot.start_time, slot.end_time)}>Book</button>
-                )}
-              </div>
-            ))
+
+              dayAvailability.map((slot, index) => (
+                <div key={index} className={`slot ${slot.status.toLowerCase()}`}>
+                  {slot.start_time} - {slot.end_time}
+                  {slot.status === "Booked" && (
+                    <span> (Booked)</span>
+                  )}
+                  {/* removed this from after slot.end_time ({slot.status}) */}
+                  {/* Add button beside each available appointment to book it */}
+                  {slot.status === "Available" && (
+                    <button className='booking_button' onClick={() => bookAppointment(formattedDate, slot.start_time, slot.end_time)}>Book</button>
+                  )}
+                </div>
+              ))
+
           ) : (
             <p>No available appointments</p>
           )}
