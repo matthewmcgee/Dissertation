@@ -7,7 +7,7 @@ const NavBar = () => {
             {/* <span class="brand"><Link to="/">ApptSched</Link></span> */}
             <a href="/" class="brand">
                 <img class="logo" src='./images/calendar-icon.svg' alt="logo"></img>
-                <span>GP Online</span>
+                <span>Digital GP</span>
             </a>
 
             {/* responsive resizing */}

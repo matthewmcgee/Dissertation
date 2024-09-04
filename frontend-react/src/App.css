@@ -176,6 +176,7 @@ nav a {
 
 .homepage-container {
   align-items: center;
+  margin-bottom: 30px;
 }
 
 .homepage-image {
@@ -190,12 +191,6 @@ nav a {
 
 .homepage-text h3 {
   color: #005ea2;
-}
-
-.homepage-button {
-  height: 50%;
-  margin-left: 20px;
-  max-width: 200px; 
 }
 
 /* formatting for nav bar items */
