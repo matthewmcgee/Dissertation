@@ -195,6 +195,11 @@ nav a {
 .homepage-button {
   height: 50%;
   margin-left: 20px;
-  max-width: 200px;
-  
+  max-width: 200px; 
+}
+
+/* formatting for nav bar items */
+.nav-bar-item {
+  background-color: #005ea2;
+  padding: 10px;
 }

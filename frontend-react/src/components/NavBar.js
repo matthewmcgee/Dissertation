@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 const NavBar = () => {
     return (
@@ -18,13 +17,26 @@ const NavBar = () => {
 
             {/* nav bar items on right hand side */}
             <div class="menu">
-                <span class="pseudo button"><Link to="/">Home</Link></span>
-                <span class="pseudo button"><Link to="/login">Login</Link></span>
-                <span class="pseudo button"><Link to="/signup">Sign Up</Link></span>
-                <span class="pseudo button"><Link to="/chatbot">Chatbot</Link></span>
-                <span class="pseudo button"><Link to="/appointment">Appointment</Link></span>              
-                {/* a tags could also be used, altho not as efficient */}
-                {/* <a class="button" href="/page3">Page 3</a> */}
+                <a href='/'
+                    className='nav-bar-item'>
+                    Home
+                </a>
+                <a href='/login'
+                    className='nav-bar-item'>
+                    Login
+                </a>
+                <a href='/signup'
+                    className='nav-bar-item'>
+                    Sign Up
+                </a>
+                <a href='/chatbot'
+                    className='nav-bar-item'>
+                    Chatbot
+                </a>
+                <a href='/appointment'
+                    className='nav-bar-item'>
+                    Appointment
+                </a>
             </div>
         </nav>
     )
