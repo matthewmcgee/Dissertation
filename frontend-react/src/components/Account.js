@@ -34,15 +34,20 @@ const Account = () => {
         <div class="container">
             <h2>Manage Account</h2>
             <ul>
-                <li>My Details</li>
-                <li>My Appointments</li>
-                <li>Appointment History</li>
                 <li>
-                    <button onClick={handleLogout} className="">
-                        Logout
-                    </button>
+                    <a href="/patient_details">
+                        My Details
+                    </a>
+                </li>
+                <li>
+                    <a href='#'>
+                        My Appointments
+                    </a>
                 </li>
             </ul>
+            <button onClick={handleLogout} className="">
+                    Logout
+            </button>
         </div>
     );
 }

@@ -76,11 +76,11 @@ const SignUp = () => {
                 navigate('/account');
             } else {
                 console.error('Signup failed:', data.message);
-                setError(data.message);
+                setError('An error occured. Please try again.');
             }
         } catch (error) {
             console.error('Sign Up Error:', error);
-            setError('An error occurred. Please try again.' + error);
+            setError('An error occurred. Please try again.');
         }
     };
 

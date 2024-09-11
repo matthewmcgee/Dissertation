@@ -13,6 +13,7 @@ import Account from './components/Account';
 import AddStaff from './components/AddStaff';
 import NotFound from './components/NotFound';
 import Footer from './components/Footer';
+import PatientDetails from './components/PatientDetails';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/appointment" element={<Appointment />} />
           <Route path="/account" element={<Account />} />
           <Route path="/addstaff" element={<AddStaff />} />
+          <Route path="/patient_details" element={<PatientDetails />} />
           {/* adding a catch all for invalid urls */}
           <Route path="*" element={<NotFound />} />
         </Routes>

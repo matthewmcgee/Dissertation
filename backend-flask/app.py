@@ -231,12 +231,14 @@ def get_patient_info(login_id):
     try:
         conn = db_pool.get_connection()
         cursor = conn.cursor(dictionary=True)
-        sql_query = f"""SELECT patient_id, first_name, last_name, date_of_birth,
-                    phone_number, login_id, practice_id
-                    FROM patient
-                    WHERE login_id = {login_id}
+        sql_query = """SELECT patient_id, first_name, last_name, date_of_birth,
+                           phone_number, patient.login_id, practice_id, email_address
+                       FROM patient
+                       LEFT JOIN login
+                       ON patient.login_id = login.login_id
+                       WHERE patient.login_id = %s
                     """
-        cursor.execute(sql_query)
+        cursor.execute(sql_query, (login_id, ))
         data = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -363,6 +365,72 @@ def book_appointment():
         return jsonify({"message":"Appointment booked successfully"}), 201
     except mysql.connector.Error as err:
         return jsonify({"error": str(err)}), 500
+
+# POST request for updating patient details
+@app.route('/update_patient/<login_id>', methods=['POST'])
+def update_patient(login_id):
+    data = request.get_json()
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    date_of_birth = data.get('date_of_birth')
+    phone_number = data.get('phone_number')
+    practice_id = data.get('practice_id')
+    email = data.get('email')
+    password = data.get('password')
+
+    # Ensure all values provided by user
+    if not all([first_name, last_name, date_of_birth, phone_number, practice_id, email]):
+        return jsonify({"message": "All fields are required"}), 400
+
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor()
+
+        # Update patient details in the patient detail
+        cursor.execute(
+            """
+            UPDATE patient 
+            SET first_name = %s, last_name = %s, date_of_birth = %s, 
+                phone_number = %s, practice_id = %s
+            WHERE login_id = %s
+            """,
+            (first_name, last_name, date_of_birth, phone_number, practice_id, login_id)
+        )
+
+        # Check if user wants to update their password (i.e. they provided one)
+        if password:
+            # Hash the password if provided
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            cursor.execute(
+                """
+                UPDATE login 
+                SET email_address = %s, password = %s
+                WHERE login_id = %s
+                """,
+                (email, hashed_password, login_id)
+            )
+        else:
+            # Update only the email if no new password is provided
+            cursor.execute(
+                """
+                UPDATE login 
+                SET email_address = %s
+                WHERE login_id = %s
+                """,
+                (email, login_id)
+            )
+
+        # Commit changes
+        conn.commit()
+
+        return jsonify({"message": "Patient details updated successfully"}), 200
+    except mysql.connector.Error as err:
+        conn.rollback()
+        print("Update Patient Error:", err)
+        return jsonify({"message": "Error: " + str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == '__main__':
