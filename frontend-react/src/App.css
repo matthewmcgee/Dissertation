@@ -1,18 +1,26 @@
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f5f5;
 }
 
-/* class for body elements */
+/* Fixes bug with footer appearing too high on the screen for pages with little content */
+.App {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 100vh;
+}
+
 .container {
-  width: 90%;
-  margin: 0 auto;
+  flex-grow: 1;
   padding-top: 70px;
   padding-bottom: 20px;
-  min-height: 100vh;
-  position: relative;
-
+  width: 90%;
+  margin: 0 auto;
 }
 
 /* styles for the nav bar */
@@ -31,15 +39,8 @@ nav a {
   color: white;
   padding: 40px 20px;
   text-align: center;
-  position: relative;
   width: 100%;
-}
-
-/* making the footer dynamic for smaller screen sizes */
-@media (min-height: 700px) {
-  .footer {
-    margin-top: -444px;
-  }
+  margin-top: auto;
 }
 
 /* top half of footer */
