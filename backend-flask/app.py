@@ -256,8 +256,8 @@ def get_practice_by_id(practice_id):
     try:
         conn = db_pool.get_connection()
         cursor = conn.cursor(dictionary=True)
-        sql_query = f"SELECT * FROM practice WHERE practice_id = {practice_id}"
-        cursor.execute(sql_query)
+        sql_query = "SELECT * FROM practice WHERE practice_id = %s"
+        cursor.execute(sql_query, (practice_id, ))
         data = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -275,16 +275,16 @@ def get_medical_staff_by_practice_id(practice_id):
     try:
         conn = db_pool.get_connection()
         cursor = conn.cursor(dictionary=True)
-        query = f"""
+        query = """
             SELECT m.medical_staff_id, m.title, m.first_name, m.last_name,
                 m.practice_id, m.medical_staff_role_id, r.role_name
             FROM medical_staff m 
             LEFT JOIN medical_staff_role r 
             ON m.medical_staff_role_id = r.medical_staff_role_id
-            WHERE m.practice_id = {practice_id}
+            WHERE m.practice_id = %s
             AND r.medical_staff_role_id != 5 -- exclude admin
             """
-        cursor.execute(query)
+        cursor.execute(query, (practice_id, ))
         data = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -302,7 +302,7 @@ def get_availability_per_staff_member(medical_staff_id):
     try:
         conn = db_pool.get_connection()
         cursor = conn.cursor(dictionary=True)
-        query = f"""SELECT av.availability_date,
+        query = """SELECT av.availability_date,
             TIME_FORMAT(av.start_time, '%H:%i') AS start_time,
             TIME_FORMAT(av.end_time, '%H:%i') AS end_time,
             CASE
@@ -316,11 +316,11 @@ def get_availability_per_staff_member(medical_staff_id):
             AND av.availability_date = ap.appointment_date
             AND av.start_time = ap.start_time
             AND av.end_time = av.end_time
-            WHERE av.medical_staff_id = {medical_staff_id}
+            WHERE av.medical_staff_id = %s
             AND av.availability_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 14 DAY
             ORDER BY av.availability_date ASC, av.start_time ASC
             """
-        cursor.execute(query)
+        cursor.execute(query, (medical_staff_id, ))
         data = cursor.fetchall()
         cursor.close()
         conn.close()
