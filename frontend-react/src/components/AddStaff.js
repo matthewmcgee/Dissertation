@@ -185,11 +185,11 @@ const AddStaff = () => {
                     </select>
 
                     <br /><br />
-                    <button type="submit" className="icon-paper-plane">
+                    <button type="submit" className="button">
                         Add Staff
                     </button>
                     <br />
-                    <button type="button" className="icon-paper-plane" onClick={handleReset}>
+                    <button type="button" className="button warning" onClick={handleReset}>
                         Reset
                     </button>
                 </form>

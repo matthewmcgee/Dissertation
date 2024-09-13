@@ -380,7 +380,7 @@ def update_patient(login_id):
 
     # Ensure all values provided by user
     if not all([first_name, last_name, date_of_birth, phone_number, practice_id, email]):
-        return jsonify({"message": "All fields are required"}), 400
+        return jsonify({"message": "All fields except password are required"}), 400
 
     try:
         conn = db_pool.get_connection()
@@ -427,6 +427,94 @@ def update_patient(login_id):
     except mysql.connector.Error as err:
         conn.rollback()
         print("Update Patient Error:", err)
+        return jsonify({"message": "Error: " + str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# loads medical staff info based on a given login id
+@app.route("/staff_details/<login_id>", methods=["GET"])
+def get_staff_details(login_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        sql_query = """SELECT medical_staff_id, title, first_name, last_name, 
+                        medical_staff.login_id, email_address
+                        FROM medical_staff
+                        LEFT JOIN login
+                        ON medical_staff.login_id = login.login_id
+                        WHERE medical_staff.login_id = %s
+                    """
+        cursor.execute(sql_query, (login_id, ))
+        data = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if not data:
+            return jsonify({"error" : "Staff member not found"}), 404
+
+        return jsonify(data)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# POST request for updating medical staff details
+@app.route('/update_staff/<login_id>', methods=['POST'])
+def update_staff(login_id):
+    data = request.get_json()
+    title = data.get('title')
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    email = data.get('email')
+    password = data.get('password')
+
+    # Ensure all values provided by user
+    if not all([title, first_name, last_name, email]):
+        return jsonify({"message": "All fields except password are required"}), 400
+
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor()
+
+        # Update medical staff details in the medical_staff table
+        cursor.execute(
+            """
+            UPDATE medical_staff 
+            SET title = %s, first_name = %s, last_name = %s
+            WHERE login_id = %s
+            """,
+            (title, first_name, last_name, login_id)
+        )
+
+        # Check if the user wants to update their password
+        if password:
+            # Hash the password if provided
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            cursor.execute(
+                """
+                UPDATE login 
+                SET email_address = %s, password = %s
+                WHERE login_id = %s
+                """,
+                (email, hashed_password, login_id)
+            )
+        else:
+            # Update only the email if no new password is provided
+            cursor.execute(
+                """
+                UPDATE login 
+                SET email_address = %s
+                WHERE login_id = %s
+                """,
+                (email, login_id)
+            )
+
+        # Commit changes
+        conn.commit()
+
+        return jsonify({"message": "Staff details updated successfully"}), 200
+    except mysql.connector.Error as err:
+        conn.rollback()
+        print("Update Staff Error:", err)
         return jsonify({"message": "Error: " + str(err)}), 500
     finally:
         cursor.close()
