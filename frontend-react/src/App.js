@@ -15,6 +15,7 @@ import NotFound from './components/NotFound';
 import Footer from './components/Footer';
 import PatientDetails from './components/PatientDetails';
 import StaffDetails from './components/StaffDetails';
+import AddAvailability from './components/AddAvailability';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/addstaff" element={<AddStaff />} />
           <Route path="/patient_details" element={<PatientDetails />} />
           <Route path="/staff_details" element={<StaffDetails />} />
+          <Route path="/add_availability" element={<AddAvailability />} />
           {/* adding a catch all for invalid urls */}
           <Route path="*" element={<NotFound />} />
         </Routes>

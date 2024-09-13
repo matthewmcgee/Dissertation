@@ -520,6 +520,79 @@ def update_staff(login_id):
         cursor.close()
         conn.close()
 
+# GET request to get medical staff id based on login id
+@app.route('/medical_staff_id/<login_id>', methods=['GET'])
+def get_medical_staff_id(login_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT medical_staff_id FROM medical_staff WHERE login_id = %s
+            """
+        cursor.execute(query, (login_id ,))
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        if not data:
+            return jsonify({'error': 'No medical staff id found for this login'}), 404
+
+        return jsonify(data)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# POST request to add availability for a medical staff member
+@app.route('/add_availability/<login_id>', methods=['POST'])
+def add_availability(login_id):
+    data = request.get_json()
+    availability_date = data.get('availability_date')
+    start_time = data.get('start_time')
+    end_time = data.get('end_time')
+    
+    # Check the user is logged in
+    if not login_id:
+        return jsonify({"message": "User not logged in"}), 401
+
+    # Validate if all fields are provided
+    if not all([availability_date, start_time, end_time]):
+        return jsonify({"message": "All fields are required"}), 400
+
+    # Validate if end_time is after start_time
+    if start_time >= end_time:
+        return jsonify({"message": "End time must be after start time"}), 400
+
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Fetch the medical_staff_id based on the login_id
+        cursor.execute("SELECT medical_staff_id FROM medical_staff WHERE login_id = %s", (login_id,))
+        medical_staff = cursor.fetchone()
+        
+        # Check if the medical_staff_id exists
+        if not medical_staff:
+            return jsonify({'message': 'Medical staff not found for this login'}), 404
+
+        medical_staff_id = medical_staff['medical_staff_id']
+        query = """
+            INSERT INTO availability (medical_staff_id, availability_date, start_time, end_time)
+            VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(query, (medical_staff_id, availability_date, start_time, end_time))
+
+        conn.commit()
+
+        return jsonify({"message": "Availability added successfully"}), 201
+
+    except mysql.connector.Error as err:
+        conn.rollback()
+        print("Add Availability Error:", err)
+        return jsonify({"message": "Error: " + str(err)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
 
 if __name__ == '__main__':
     print(f"\nRunning Flask server on port {str(PORT_NUMBER)} ...\n")
