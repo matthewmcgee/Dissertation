@@ -16,6 +16,9 @@ import Footer from './components/Footer';
 import PatientDetails from './components/PatientDetails';
 import StaffDetails from './components/StaffDetails';
 import AddAvailability from './components/AddAvailability';
+import PatientAccount from './components/PatientAccount';
+import StaffAccount from './components/StaffAccount';
+import AdminAccount from './components/AdminAccount';
 
 function App() {
   return (
@@ -32,6 +35,9 @@ function App() {
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/appointment" element={<Appointment />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/patient_account" element={<PatientAccount />} />
+          <Route path="/staff_account" element={<StaffAccount />} />
+          <Route path="/admin_account" element={<AdminAccount />} />
           <Route path="/addstaff" element={<AddStaff />} />
           <Route path="/patient_details" element={<PatientDetails />} />
           <Route path="/staff_details" element={<StaffDetails />} />
