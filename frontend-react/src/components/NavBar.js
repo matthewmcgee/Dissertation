@@ -21,14 +21,6 @@ const NavBar = () => {
                     className='nav-bar-item'>
                     Home
                 </a>
-                <a href='/login'
-                    className='nav-bar-item'>
-                    Login
-                </a>
-                <a href='/signup'
-                    className='nav-bar-item'>
-                    Sign Up
-                </a>
                 <a href='/chatbot'
                     className='nav-bar-item'>
                     Chatbot
@@ -36,6 +28,10 @@ const NavBar = () => {
                 <a href='/appointment'
                     className='nav-bar-item'>
                     Appointment
+                </a>
+                <a href='/account'
+                    className='nav-bar-item'>
+                    Account
                 </a>
             </div>
         </nav>

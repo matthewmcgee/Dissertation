@@ -199,3 +199,8 @@ nav a {
   background-color: #005ea2;
   padding: 10px;
 }
+
+/* colour change when hovering over nav bar items */
+.nav-bar-item:hover {
+  color: #3cc28a;
+}

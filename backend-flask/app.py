@@ -85,7 +85,7 @@ def signup():
         # commit the changes now both records have been successfully inserted
         conn.commit()
 
-        return jsonify({"message": "User registered successfully"}), 201
+        return jsonify({"message": "User registered successfully", "login_id": login_id}), 201
     except mysql.connector.Error as err:
         conn.rollback()  # Rollback in case of error
         print("Signup Error:", err)

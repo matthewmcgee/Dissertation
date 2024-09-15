@@ -8,7 +8,7 @@ const SignUp = () => {
     const [phonenumber, setPhonenumber] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [practice, setPractice] = useState('');
+    const [practice, setPractice] = useState(''); // Default to empty string
     const [practices, setPractices] = useState([]);
     const [error, setError] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -47,6 +47,11 @@ const SignUp = () => {
         e.preventDefault();
         setError('');
 
+        if (!practice) {
+            setError('Please select a practice.');
+            return;
+        }
+
         try {
             const response = await fetch('http://localhost:5001/signup', {
                 method: 'POST',
@@ -76,7 +81,7 @@ const SignUp = () => {
                 navigate('/account');
             } else {
                 console.error('Signup failed:', data.message);
-                setError('An error occured. Please try again.');
+                setError('An error occurred. Please try again.');
             }
         } catch (error) {
             console.error('Sign Up Error:', error);
@@ -96,6 +101,7 @@ const SignUp = () => {
                         className="stack"
                         placeholder="First Name"
                         value={firstname}
+                        required
                         onChange={(e) => setFirstname(e.target.value)}
                     />
                     <input
@@ -104,6 +110,7 @@ const SignUp = () => {
                         className=""
                         placeholder="Last Name"
                         value={lastname}
+                        required
                         onChange={(e) => setLastname(e.target.value)}
                     />
                     <br /><br />
@@ -113,6 +120,7 @@ const SignUp = () => {
                         name="birthday"
                         className=""
                         value={birthday}
+                        required
                         onChange={(e) => setBirthday(e.target.value)}
                     />
                     <br /><br />
@@ -122,6 +130,7 @@ const SignUp = () => {
                         className="stack"
                         placeholder="Phone Number"
                         value={phonenumber}
+                        required
                         onChange={(e) => setPhonenumber(e.target.value)}
                     />
                     <input
@@ -130,6 +139,7 @@ const SignUp = () => {
                         className="stack"
                         placeholder="Email"
                         value={email}
+                        required
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
@@ -138,6 +148,7 @@ const SignUp = () => {
                         className=""
                         placeholder="Password"
                         value={password}
+                        required
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <br /><br />
@@ -146,8 +157,10 @@ const SignUp = () => {
                         name="practice"
                         className=""
                         value={practice}
+                        required
                         onChange={(e) => setPractice(e.target.value)}
                     >
+                        <option value="">--Select a Practice--</option> {/* Placeholder */}
                         {/* dynamically showing practices */}
                         {practices.map((practice) => (
                             <option 

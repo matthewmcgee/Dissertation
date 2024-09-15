@@ -13,7 +13,7 @@ const Login = () => {
         const loginId = localStorage.getItem('login_id');
         if (loginId) {
             setIsLoggedIn(true);
-            // Redirect to the calendar page if already logged in
+            // Redirect to the account page if already logged in
             navigate('/account'); 
         }
     }, [navigate]);
@@ -75,6 +75,7 @@ const Login = () => {
                                 className="stack"
                                 placeholder="Email"
                                 value={email}
+                                required
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                             <input
@@ -83,6 +84,7 @@ const Login = () => {
                                 className=""
                                 placeholder="Password"
                                 value={password}
+                                required
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             <br /><br />

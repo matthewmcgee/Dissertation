@@ -10,6 +10,9 @@ const Appointment = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // reset the error message
+    setError('');
+
     // Get the login id from local storage
     const loginId = localStorage.getItem("login_id");
 

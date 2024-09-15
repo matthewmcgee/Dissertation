@@ -1,8 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Account = () => {
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    // using useEffect React hook to check if user is already logged in
+    useEffect(() => {
+        const loginId = localStorage.getItem('login_id');
+        if (!loginId) {
+            setIsLoggedIn(false);
+            // Redirect to the login page if not logged in
+            navigate('/login'); 
+        }
+    }, [navigate]);
 
     const handleLogout = async () => {
         // fetch logout post request
