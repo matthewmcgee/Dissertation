@@ -1,6 +1,5 @@
-// TODO: only visible to patients, not staff/admin
-// -> might need to add user_role_id into local storage, where user_id is kept
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 
 const Appointment = () => {
   const [practice, setPractice] = useState(null);
@@ -8,6 +7,21 @@ const Appointment = () => {
   const [selectedStaff, setSelectedStaff] = useState('');
   const [availability, setAvailability] = useState([]);
   const [error, setError] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+   // check access of user trying to view page
+   useEffect(() => {
+    const loginId = localStorage.getItem('login_id');
+    const userRoleId = localStorage.getItem('user_role_id');
+    // only patients (1) can view the page
+    if (userRoleId == 1) {
+        setIsLoggedIn(true);
+    } else {
+        // Redirect to the account page if not a patient
+        navigate('/account');
+    }
+}, [navigate]);
 
   useEffect(() => {
     // reset the error message

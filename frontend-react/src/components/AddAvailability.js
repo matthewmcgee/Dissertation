@@ -10,18 +10,21 @@ const AddAvailability = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Redirect user if not logged in
+  // check access of user trying to view page
   useEffect(() => {
     const loginId = localStorage.getItem('login_id');
-    if (!loginId) {
-      setIsLoggedIn(false);
-      navigate('/home');
-    } else {
+    const userRoleId = localStorage.getItem('user_role_id');
+    // only medical staff (2) can view the page
+    if (userRoleId == 2) {
       setIsLoggedIn(true);
       // get their medical_staff_id
       fetchMedicalStaffId(loginId);
+    } else {
+      // Redirect if not able to view
+      navigate('/home');
     }
   }, [navigate]);
+
 
   // Fetch medical staff ID based on login ID
   const fetchMedicalStaffId = async (loginId) => {

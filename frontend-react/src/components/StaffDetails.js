@@ -11,14 +11,16 @@ const StaffDetails = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Check if the user is logged in, redirect if not
+    // check access of user trying to view page
     useEffect(() => {
         const loginId = localStorage.getItem('login_id');
-        if (!loginId) {
-            setIsLoggedIn(false);
-            navigate('/home'); 
-        } else {
+        const userRoleId = localStorage.getItem('user_role_id');
+        // only medical staff (2) can view the page
+        if (userRoleId == 2) {
             setIsLoggedIn(true);
+        } else {
+            // Redirect if not able to view
+            navigate('/home');
         }
     }, [navigate]);
 

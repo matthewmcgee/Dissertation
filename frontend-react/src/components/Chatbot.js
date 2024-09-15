@@ -1,6 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Chatbot = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+
+    // check access of user trying to view page
+    useEffect(() => {
+        const loginId = localStorage.getItem('login_id');
+        const userRoleId = localStorage.getItem('user_role_id');
+        // only patients (1) can view the chatbot
+        if (userRoleId == 1) {
+            setIsLoggedIn(true);
+        } else {
+            // Redirect to the account page if not a patient
+            navigate('/account');
+        }
+    }, [navigate]);
+
     return (
         <div class="container">
             <h2>Chatbot</h2>

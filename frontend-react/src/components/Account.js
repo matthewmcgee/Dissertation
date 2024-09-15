@@ -27,8 +27,9 @@ const Account = () => {
             });
 
             if (response.ok) {
-                // clear local storage
+                // clear login_id and user_role_id from local storage
                 localStorage.removeItem("login_id");
+                localStorage.removeItem("user_role_id");
                 // Redirect to page if successfully logged out
                 navigate("/home");
             } else {

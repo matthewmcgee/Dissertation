@@ -74,8 +74,9 @@ const SignUp = () => {
 
             if (response.ok) {
                 console.log('Signup successful:', data);
-                // Store login_id in localStorage
+                // Store login_id and user_role_id in localStorage
                 localStorage.setItem('login_id', data.login_id);
+                localStorage.setItem('user_role_id', data.user_role_id);
                 setIsLoggedIn(true);
                 // Redirect to the account page
                 navigate('/account');

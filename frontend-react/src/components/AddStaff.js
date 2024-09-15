@@ -1,7 +1,5 @@
-// TODO: needs to be admin only to access this page - see isLoggedIn in Login/Signup
-// - it 
-// TODO: admin only able to add staff for their practice
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AddStaff = () => {
     const [title, setTitle] = useState('');
@@ -15,6 +13,21 @@ const AddStaff = () => {
     const [medicalStaffRoles, setMedicalStaffRoles] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+  
+    // check access of user trying to view page
+    useEffect(() => {
+        const loginId = localStorage.getItem('login_id');
+        const userRoleId = localStorage.getItem('user_role_id');
+        // only admins (3) can view the page
+        if (userRoleId == 3) {
+            setIsLoggedIn(true);
+        } else {
+            // Redirect to the account page if not able to view
+            navigate('/home');
+        }
+    }, [navigate]);
 
     // fetch practice data and medical staff from backend
     useEffect(() => {

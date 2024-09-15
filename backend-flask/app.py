@@ -85,7 +85,9 @@ def signup():
         # commit the changes now both records have been successfully inserted
         conn.commit()
 
-        return jsonify({"message": "User registered successfully", "login_id": login_id}), 201
+        return jsonify({"message": "User registered successfully", 
+                        "login_id": login_id,
+                        "user_role_id": user_role_id}), 201
     except mysql.connector.Error as err:
         conn.rollback()  # Rollback in case of error
         print("Signup Error:", err)
@@ -172,7 +174,9 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
             # login successful, store the login ID in the session
             session["login_id"] = user["login_id"]
-            return jsonify({"message": "Login successful", "login_id": user['login_id']}), 200
+            return jsonify({"message": "Login successful", 
+                            "login_id": user['login_id'],
+                            "user_role_id": user['user_role_id']}), 200
         else:
             return jsonify({"message": "Invalid email or password"}), 401
     except mysql.connector.Error as err:

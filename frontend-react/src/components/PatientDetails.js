@@ -14,17 +14,16 @@ const PatientDetails = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // redirect user if not logged in
+    // check access of user trying to view page
     useEffect(() => {
-        // Check if the user is already logged in
         const loginId = localStorage.getItem('login_id');
-        if (!loginId) {
-            setIsLoggedIn(false);
-            // Redirect to home page if not logged in
-            navigate('/home'); 
-        } else {
-            // set isLoggedIn to true
+        const userRoleId = localStorage.getItem('user_role_id');
+        // only patients (1) can view the page
+        if (userRoleId == 1) {
             setIsLoggedIn(true);
+        } else {
+            // Redirect if not able to view
+            navigate('/home');
         }
     }, [navigate]);
 
