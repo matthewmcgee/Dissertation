@@ -201,6 +201,6 @@ nav a {
 }
 
 /* colour change when hovering over nav bar items */
-.nav-bar-item:hover {
+.nav-bar-item:hover, nav a span:hover {
   color: #3cc28a;
 }

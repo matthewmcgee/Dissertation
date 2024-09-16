@@ -597,6 +597,188 @@ def add_availability(login_id):
         cursor.close()
         conn.close()
 
+# GET request to get upcoming patient appointments
+@app.route('/upcoming_patient_appointments/<patient_id>', methods=['GET'])
+def get_upcoming_patient_appointments(patient_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT appointment_id,
+                appointment_date,
+                TIME_FORMAT(start_time, '%H:%i') AS start_time,
+                TIME_FORMAT(end_time, '%H:%i') AS end_time,
+                patient_id,
+                CONCAT(medical_staff.title, ' ', medical_staff.first_name,
+                    ' ', medical_staff.last_name) AS staff_member,
+                practice.practice_name,
+            CONCAT(practice.address, ', ', practice.city) AS practice_address
+            FROM appointment
+            LEFT JOIN medical_staff
+            ON appointment.medical_staff_id = medical_staff.medical_staff_id
+            LEFT JOIN practice
+            ON medical_staff.practice_id = practice.practice_id
+            WHERE patient_id = %s
+            AND appointment_date >= CURDATE()
+            ORDER BY appointment_date ASC, start_time ASC
+            """
+        cursor.execute(query, (patient_id ,))
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # return jsonified data
+        if data:
+            return jsonify(data)
+        # important if no data exists, return an empty array (not an error)
+        else:
+            return jsonify([])
+        
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# GET request to get previous patient appointments
+@app.route('/previous_patient_appointments/<patient_id>', methods=['GET'])
+def get_previous_patient_appointments(patient_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT appointment_id, 
+                appointment_date,
+                TIME_FORMAT(start_time, '%H:%i') AS start_time,
+                TIME_FORMAT(end_time, '%H:%i') AS end_time,
+                patient_id,
+                CONCAT(medical_staff.title, ' ', medical_staff.first_name,
+                    ' ', medical_staff.last_name) AS staff_member,
+                practice.practice_name,
+            CONCAT(practice.address, ', ', practice.city) AS practice_address
+            FROM appointment
+            LEFT JOIN medical_staff
+            ON appointment.medical_staff_id = medical_staff.medical_staff_id
+            LEFT JOIN practice
+            ON medical_staff.practice_id = practice.practice_id
+            WHERE patient_id = %s
+            AND appointment_date < CURDATE()
+            ORDER BY appointment_date DESC, start_time ASC
+            """
+        cursor.execute(query, (patient_id ,))
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # return jsonified data
+        if data:
+            return jsonify(data)
+        # important if no data exists, return an empty array (not an error)
+        else:
+            return jsonify([])
+        
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# GET request to get upcoming staff appointments
+@app.route('/upcoming_staff_appointments/<medical_staff_id>', methods=['GET'])
+def get_upcoming_staff_appointments(medical_staff_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT appointment_id,
+                appointment_date,
+                TIME_FORMAT(start_time, '%H:%i') AS start_time,
+                TIME_FORMAT(end_time, '%H:%i') AS end_time,
+                patient_id,
+                CONCAT(medical_staff.title, ' ', medical_staff.first_name,
+                    ' ', medical_staff.last_name) AS staff_member,
+                practice.practice_name,
+            CONCAT(practice.address, ', ', practice.city) AS practice_address
+            FROM appointment
+            LEFT JOIN medical_staff
+            ON appointment.medical_staff_id = medical_staff.medical_staff_id
+            LEFT JOIN practice
+            ON medical_staff.practice_id = practice.practice_id
+            WHERE medical_staff.medical_staff_id = %s
+            AND appointment_date >= CURDATE()
+            ORDER BY appointment_date ASC, start_time ASC
+            """
+        cursor.execute(query, (medical_staff_id ,))
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # return jsonified data
+        if data:
+            return jsonify(data)
+        # important if no data exists, return an empty array (not an error)
+        else:
+            return jsonify([])
+        
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# GET request to get previous staff appointments
+@app.route('/previous_staff_appointments/<medical_staff_id>', methods=['GET'])
+def get_previous_staff_appointments(medical_staff_id):
+    try:
+        conn = db_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT appointment_id, 
+                appointment_date,
+                TIME_FORMAT(start_time, '%H:%i') AS start_time,
+                TIME_FORMAT(end_time, '%H:%i') AS end_time,
+                patient_id,
+                CONCAT(medical_staff.title, ' ', medical_staff.first_name,
+                    ' ', medical_staff.last_name) AS staff_member,
+                practice.practice_name,
+            CONCAT(practice.address, ', ', practice.city) AS practice_address
+            FROM appointment
+            LEFT JOIN medical_staff
+            ON appointment.medical_staff_id = medical_staff.medical_staff_id
+            LEFT JOIN practice
+            ON medical_staff.practice_id = practice.practice_id
+            WHERE medical_staff.medical_staff_id = %s
+            AND appointment_date < CURDATE()
+            ORDER BY appointment_date DESC, start_time ASC
+            """
+        cursor.execute(query, (medical_staff_id ,))
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # return jsonified data
+        if data:
+            return jsonify(data)
+        # important if no data exists, return an empty array (not an error)
+        else:
+            return jsonify([])
+        
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
+# POST request to delete an appointment based on appointment_id
+@app.route('/delete_appointment/<appointment_id>', methods=['POST'])
+def delete_appointment(appointment_id):
+    try:
+        if not appointment_id:
+            return jsonify({"error": "No appointment_id provided"}), 400
+
+        conn = db_pool.get_connection()
+        cursor = conn.cursor()
+        
+        query = "DELETE FROM appointment WHERE appointment_id = %s"
+        cursor.execute(query, (appointment_id,))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"success": "Appointment deleted successfully"}), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+
 
 if __name__ == '__main__':
     print(f"\nRunning Flask server on port {str(PORT_NUMBER)} ...\n")

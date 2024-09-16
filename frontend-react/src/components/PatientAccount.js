@@ -55,7 +55,7 @@ const PatientAccount = () => {
                     </a>
                 </li>
                 <li>
-                    <a href='#'>
+                    <a href='/manage_appointments'>
                         My Appointments
                     </a>
                 </li>

@@ -8,7 +8,7 @@ const Footer = () => {
           <h4>Quick Links</h4>
           <ul>
             <li><a href="/home">Home</a></li>
-            <li><a href="/appointment">Make an Appointment</a></li>
+            <li><a href="/appointment">Book Appointment</a></li>
             <li><a href="/account">My Account</a></li>
             <li><a href="/chatbot">Chatbot</a></li>
           </ul>

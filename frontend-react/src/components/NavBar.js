@@ -27,11 +27,11 @@ const NavBar = () => {
                 </a>
                 <a href='/appointment'
                     className='nav-bar-item'>
-                    Appointment
+                    Book Appointment
                 </a>
                 <a href='/account'
                     className='nav-bar-item'>
-                    Account
+                    My Account
                 </a>
             </div>
         </nav>

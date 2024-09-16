@@ -55,7 +55,7 @@ const StaffAccount = () => {
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="/manage_appointments">
                         Manage Appointments
                     </a>
                 </li>

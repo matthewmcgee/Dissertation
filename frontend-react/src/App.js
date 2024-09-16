@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 // Routes used in v6, not Switch
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // css stylesheet
@@ -19,6 +19,7 @@ import AddAvailability from './components/AddAvailability';
 import PatientAccount from './components/PatientAccount';
 import StaffAccount from './components/StaffAccount';
 import AdminAccount from './components/AdminAccount';
+import ManageAppointments from './components/ManageAppointments';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/patient_details" element={<PatientDetails />} />
           <Route path="/staff_details" element={<StaffDetails />} />
           <Route path="/add_availability" element={<AddAvailability />} />
+          <Route path="/manage_appointments" element={<ManageAppointments />} />
           {/* adding a catch all for invalid urls */}
           <Route path="*" element={<NotFound />} />
         </Routes>
